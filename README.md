@@ -5,14 +5,41 @@
 - Javaプログラム(JavaConfig)  
 
 #### DI by アノテーション
-アノテーションベースでだが、設定ファイル必要  
-登場人物
-```Java
-@Autowired // 呼び出し側
-@Component // DI対象ファイルに付与する
-@
-@
+アノテーションベースだが、設定ファイル必要(Bean定義 or JavaConfig)
+
+##### 登場人物
+```java
+@Autowired // インジェクトする
+@Component // 具象インスタンスに付与する
+@Service
+@Repository
+@Configuration
 ```
+###### @Autowired
+≒ @Resource (ほぼ同じだが、多分@Duplicated。@Autowiredつかう)
+``` java
+@Autowired
+private Foo foo;
+
+// メソッドインジェクション
+@Autowired
+public Hoge hoge (Fuga fuga, Piyo piyo){
+}
+
+// コンストラクタインジェクション
+class Hoge {
+  @Autowired
+  public Hoge(Bar bar){
+  }
+}
+```
+###### @Component
+####### 関連
+``` java
+@Service
+@Repository // TODO データ周りの例外を、DataAccessExceptionに変換してくれる。DBFluteのEntityAlreadyDeletedExceptionをこれで捕まえられる。。？
+```
+
 
 ## 第xxx回 備考  
 
@@ -24,7 +51,6 @@
 > まとめ
 - 丸め誤差の問題
  - 2進数と10進数での数値の表現方法の違いに由来
--
 
 ### BigDecimal
 > - 10進数での数値管理
@@ -47,18 +73,20 @@ new BigDecimal("12.345")
 > #### 嵌りそうなポイント
 - 等価評価では、10進数とスケールを併せて比較  
 
-> ``` java:sample.java
+> ``` java
 // ダメな例
 BigDecimal total = new BigDecimal("100");
 BigDecimal partialA = new BigDecimal("66.6");
 BigDecimal partialB = new BigDecimal("33.4");
-total.equals(partialA.add(partialB)) // false  
-// スケールを統一
+total.equals(partialA.add(partialB)) // false
+
+> // スケールを統一
 BigDecimal total = new BigDecimal("100.0"); // スケールを統一
 BigDecimal partialA = new BigDecimal("66.6");
 BigDecimal partialB = new BigDecimal("33.4");
 total.equals(partialA.add(partialB)) // true  
-// もしくは、compareを使う
+
+> // もしくは、compareを使う
 BigDecimal total = new BigDecimal("100");
 BigDecimal partialA = new BigDecimal("66.6");
 BigDecimal partialB = new BigDecimal("33.4");
@@ -70,6 +98,7 @@ total.compare(partialA.add(partialB)) // true
 > ```java
 // Bad
 new BigDecimal(123.45) //123.45がDouble型になるので 丸め込み発生
-// 文字列にする
+
+> // 文字列にする
 new BigDecimal("123.45")
 ```
